@@ -11,7 +11,16 @@ class RidesService {
 
   static List<Ride> availableRides = fakeRides;   // TODO for now fake data
 
+  List<Ride> getRides(){
+    return availableRides;
+  }
 
+  List<Ride> getRideByDate(DateTime date){
+    return availableRides.where((ride) =>
+    ride.departureDate.day == date.day
+        && ride.departureDate.month == date.month
+        && ride.departureDate.year == date.year).toList();
+  }
   ///
   ///  Return the relevant rides, given the passenger preferences
   ///
@@ -22,4 +31,35 @@ class RidesService {
     return availableRides.where( (ride) => ride.departureLocation == preferences.departure && ride.arrivalLocation == preferences.arrival).toList();
   }
  
+}
+
+void main() {
+  RidesService service = RidesService();
+  DateTime today = DateTime.now();
+
+  List<Ride> ridesToday = service.getRideByDate(today);
+
+  print("ride available on today: ${today}");
+
+  for(Ride ride in ridesToday){
+    print("Departure: ${ride.departureLocation.name}"
+        " at ${ride.departureDate}, "
+        "Arrival: ${ride.arrivalLocation.name}"
+        " at ${ride.arrivalDateTime},"
+        " Driver: ${ride.driver},"
+        " Seats: ${ride.availableSeats},"
+        " Price: ${ride.pricePerSeat}");
+  }
+
+  List <Ride> allRides = service.getRides();
+  print("all rides: ");
+  for(Ride ride in allRides){
+
+    print("Departure: ${ride.departureLocation.name} "
+        "at ${ride.departureDate}, "
+        "Arrival: ${ride.arrivalLocation.name} "
+        "at ${ride.arrivalDateTime}, Driver: ${ride.driver}, "
+        "Seats: ${ride.availableSeats}, "
+        "Price: ${ride.pricePerSeat}");
+  }
 }
