@@ -1,5 +1,5 @@
 ///
-/// This model describes a  BlaBlaCar user.
+/// This model describes a BlaBlaCar user.
 ///
 class User {
   final String firstName;
@@ -7,14 +7,19 @@ class User {
   final String email;
   final String phone;
   final String profilePicture;
-
   final bool verifiedProfile;
 
-  User(
-      {required this.firstName,
-      required this.lastName,
-      required this.email,
-      required this.phone,
-      required this.profilePicture,
-      required this.verifiedProfile});
+  User({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.phone,
+    required this.profilePicture,
+    required this.verifiedProfile,
+  });
+
+  @override
+  String toString() {
+    return '$firstName $lastName';
+  }
 }

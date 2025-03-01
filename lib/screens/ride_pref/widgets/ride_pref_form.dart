@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/screens/ride_pref/widgets/location_picker.dart';
+import 'package:untitled/screens/ride_pref/widgets/ride_screen.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
 
@@ -73,14 +74,15 @@ class _RidePrefFormState extends State<RidePrefForm> {
         requestedSeats: requestedSeats,
       );
 
-      print('Departure: ${ridePref.departure.name}');
-      print('Departure Date: ${ridePref.departureDate.toLocal().toString().split(' ')[0]}');
-      print('Arrival: ${ridePref.arrival.name}');
-      print('Requested Seats: ${ridePref.requestedSeats}');
-
-      Navigator.pop(context, ridePref);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RidesScreen(ridePref: ridePref),
+        ),
+      );
     }
   }
+
 
   Future<void> _selectLocation(BuildContext context, bool isDeparture) async {
     final selectedLocation = await Navigator.push<Location>(
