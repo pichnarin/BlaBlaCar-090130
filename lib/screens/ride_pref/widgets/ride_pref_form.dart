@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/screens/ride_pref/widgets/location_picker.dart';
 import 'package:untitled/screens/ride_pref/widgets/ride_screen.dart';
+import 'package:untitled/screens/ride_pref/widgets/seat_number_sprinter.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
 
@@ -15,10 +16,10 @@ class RidePrefForm extends StatefulWidget {
 
 class _RidePrefFormState extends State<RidePrefForm> {
   final _formKey = GlobalKey<FormState>();
+  int requestedSeats = 1;
   late Location departure;
   late DateTime departureDate;
   late Location arrival;
-  late int requestedSeats;
 
   final TextEditingController _departureController = TextEditingController();
   final TextEditingController _arrivalController = TextEditingController();
@@ -139,6 +140,13 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.location_on),
                 ),
                 onTap: () => _selectLocation(context, true),
+
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid location';
+                  }
+                  return null;
+                },
               ),
 
               SizedBox(height: 8),
@@ -151,6 +159,13 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.location_on),
                 ),
                 onTap: () => _selectLocation(context, false),
+
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid location';
+                  }
+                  return null;
+                },
               ),
 
               SizedBox(height: 8),
@@ -163,27 +178,35 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.date_range),
                 ),
                 onTap: () => _selectDate(context),
+
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a valid date';
+                  }
+                  return null;
+                },
               ),
 
               SizedBox(height: 8),
 
-              DropdownButtonFormField<int>(
-                value: requestedSeats,
-                decoration: InputDecoration(
-                  labelText: 'Requested Seats',
-                  icon: Icon(Icons.event_seat),
-                ),
-                items: List.generate(4, (index) => index + 1)
-                    .map((value) => DropdownMenuItem<int>(
-                  value: value,
-                  child: Text(value.toString()),
-                ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    requestedSeats = value!;
-                  });
+              Text('Seats Selected: $requestedSeats', style: TextStyle(fontSize: 18)),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () async {
+                  // Navigate to the SeatNumberSpinner screen
+                  final selectedSeatCount = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SeatNumberSpinner(initialSeatCount: requestedSeats),
+                    ),
+                  );
+                  if (selectedSeatCount != null) {
+                    setState(() {
+                      requestedSeats = selectedSeatCount;
+                    });
+                  }
                 },
+                child: Text('Request Seat'),
               ),
 
               SizedBox(height: 16),
