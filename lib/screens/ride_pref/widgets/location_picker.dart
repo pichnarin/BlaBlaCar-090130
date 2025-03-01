@@ -16,7 +16,9 @@ class LocationPickerState extends State<LocationPicker> {
 
   void _searchLocations(String query) {
     setState(() {
-      _searchResults = fakeLocations.where((location) => location.name.toLowerCase().contains(query.toLowerCase())).toList();
+      _searchResults = fakeLocations
+          .where((location) => location.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
@@ -37,7 +39,14 @@ class LocationPickerState extends State<LocationPicker> {
               onChanged: _searchLocations,
             ),
             Expanded(
-              child: ListView.builder(
+              child: _searchResults.isEmpty
+                  ? Center(
+                child: Text(
+                  'No results found',
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                ),
+              )
+                  : ListView.builder(
                 itemCount: _searchResults.length,
                 itemBuilder: (context, index) {
                   final location = _searchResults[index];
@@ -56,4 +65,3 @@ class LocationPickerState extends State<LocationPicker> {
     );
   }
 }
-

@@ -82,6 +82,40 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
+  Future<void> _selectLocation(BuildContext context, bool isDeparture) async {
+    final selectedLocation = await Navigator.push<Location>(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return LocationPicker();
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0); // Starting point (bottom of the screen)
+          const end = Offset.zero; // Ending point (normal position)
+          const curve = Curves.easeInOut; // Smooth curve for the animation
+
+          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(position: offsetAnimation, child: child);
+        },
+      ),
+    );
+
+    if (selectedLocation != null) {
+      setState(() {
+        if (isDeparture) {
+          departure = selectedLocation;
+          _departureController.text = departure.name;
+        } else {
+          arrival = selectedLocation;
+          _arrivalController.text = arrival.name;
+        }
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,21 +136,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   labelText: 'Departure Location',
                   icon: Icon(Icons.location_on),
                 ),
-                onTap: () async {
-                  final selectedLocation = await Navigator.push<Location>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LocationPicker(),
-                    ),
-                  );
-
-                  if (selectedLocation != null) {
-                    setState(() {
-                      departure = selectedLocation;
-                      _departureController.text = selectedLocation.name;
-                    });
-                  }
-                },
+                onTap: () => _selectLocation(context, true),
               ),
 
               SizedBox(height: 8),
@@ -128,21 +148,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   labelText: 'Arrival Location',
                   icon: Icon(Icons.location_on),
                 ),
-                onTap: () async {
-                  final selectedLocation = await Navigator.push<Location>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => LocationPicker(),
-                    ),
-                  );
-
-                  if (selectedLocation != null) {
-                    setState(() {
-                      arrival = selectedLocation;
-                      _arrivalController.text = selectedLocation.name;
-                    });
-                  }
-                },
+                onTap: () => _selectLocation(context, false),
               ),
 
               SizedBox(height: 8),
