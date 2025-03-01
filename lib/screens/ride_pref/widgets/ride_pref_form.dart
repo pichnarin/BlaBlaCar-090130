@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:untitled/screens/ride_pref/widgets/location_picker.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
 
-///
-/// A Ride Preference Form is a view to select:
-///   - A departure location
-///   - An arrival location
-///   - A date
-///   - A number of seats
-///
-/// The form can be created with an existing RidePref (optional).
-///
 class RidePrefForm extends StatefulWidget {
-  // The form can be created with an optional initial RidePref.
   final RidePref? initRidePref;
 
   const RidePrefForm({super.key, this.initRidePref});
@@ -30,10 +21,8 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
   final TextEditingController _departureController = TextEditingController();
   final TextEditingController _arrivalController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
-  // ----------------------------------
-  // Initialize the Form attributes
-  // ----------------------------------
   @override
   void initState() {
     super.initState();
@@ -44,6 +33,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
     _departureController.text = departure.name;
     _arrivalController.text = arrival.name;
+    _dateController.text = departureDate.toLocal().toString().split(' ')[0];
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -51,11 +41,12 @@ class _RidePrefFormState extends State<RidePrefForm> {
       context: context,
       initialDate: departureDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      lastDate: DateTime(2030),
     );
     if (picked != null && picked != departureDate) {
       setState(() {
         departureDate = picked;
+        _dateController.text = departureDate.toLocal().toString().split(' ')[0];
       });
     }
   }
@@ -68,15 +59,9 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
       _departureController.text = departure.name;
       _arrivalController.text = arrival.name;
-
-      // _departureController.text = departure.name.isNotEmpty ? departure.name : "Unknown";
-      // _arrivalController.text = arrival.name.isNotEmpty ? arrival.name : "Unknown";
     });
   }
 
-  // ----------------------------------
-  // Handle form submission
-  // ----------------------------------
   void _onSubmit() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -88,7 +73,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
         requestedSeats: requestedSeats,
       );
 
-      // Print the ride preference to the console
       print('Departure: ${ridePref.departure.name}');
       print('Departure Date: ${ridePref.departureDate.toLocal().toString().split(' ')[0]}');
       print('Arrival: ${ridePref.arrival.name}');
@@ -98,148 +82,126 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-  // ----------------------------------
-  // Build the widgets
-  // ----------------------------------
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // TextFormField(
-          //   controller: _departureController,
-          //   decoration: InputDecoration(
-          //     labelText: 'Departure Location',
-          //     icon: Icon(Icons.location_on),
-          //   ),
-          //   validator: (value) {
-          //     if (value == null || value.isEmpty) {
-          //       return 'Please enter a departure location';
-          //     }
-          //     return null;
-          //   },
-          //   onSaved: (value) {
-          //     departure = Location(name: value!, country: Country.france);
-          //   },
-          // ),
-          // TextFormField(
-          //   controller: _arrivalController,
-          //   decoration: InputDecoration(
-          //     labelText: 'Arrival Location',
-          //     icon: Icon(Icons.location_on),
-          //   ),
-          //   validator: (value) {
-          //     if (value == null || value.isEmpty) {
-          //       return 'Please enter an arrival location';
-          //     }
-          //     return null;
-          //   },
-          //   onSaved: (value) {
-          //     arrival = Location(name: value!, country: Country.france);
-          //   },
-          // ),
-          TextFormField(
-            controller: _departureController,
-            decoration: InputDecoration(
-              labelText: 'Departure Location',
-              icon: Icon(Icons.location_on),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a departure location';
-              }
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {
-                departure = Location(name: value, country: Country.france);
-              });
-            },
-          ),
-          TextFormField(
-            controller: _arrivalController,
-            decoration: InputDecoration(
-              labelText: 'Arrival Location',
-              icon: Icon(Icons.location_on),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter an arrival location';
-              }
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {
-                arrival = Location(name: value, country: Country.france);
-              });
-            },
-          ),
-
-
-          TextFormField(
-            readOnly: true,
-            decoration: InputDecoration(
-              labelText: 'Departure Date',
-              icon: Icon(Icons.date_range),
-            ),
-            onTap: () => _selectDate(context),
-            controller: TextEditingController(text: departureDate.toLocal().toString().split(' ')[0]),
-          ),
-          DropdownButtonFormField<int>(
-            value: requestedSeats,
-            decoration: InputDecoration(
-              labelText: 'Requested Seats',
-              icon: Icon(Icons.event_seat),
-            ),
-            items: List.generate(10, (index) => index + 1)
-                .map((value) => DropdownMenuItem<int>(
-              value: value,
-              child: Text(value.toString()),
-            ))
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                requestedSeats = value!;
-              });
-            },
-          ),
-          ElevatedButton(
-            onPressed: _switchLocations,
-            child: Text('Switch Locations'),
-          ),
-          ElevatedButton(
-            onPressed: _onSubmit,
-            child: Text('Submit'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ----------------------------------
-// Test the RidePrefForm
-// ----------------------------------
-class TestRidePrefForm extends StatelessWidget {
-  const TestRidePrefForm({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Test RidePrefForm'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: RidePrefForm(),
+      appBar: AppBar(title: Text('Ride Preference Form')),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+
+              TextFormField(
+                controller: _departureController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Departure Location',
+                  icon: Icon(Icons.location_on),
+                ),
+                onTap: () async {
+                  final selectedLocation = await Navigator.push<Location>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LocationPicker(),
+                    ),
+                  );
+
+                  if (selectedLocation != null) {
+                    setState(() {
+                      departure = selectedLocation;
+                      _departureController.text = selectedLocation.name;
+                    });
+                  }
+                },
+              ),
+
+              SizedBox(height: 8),
+
+              TextFormField(
+                controller: _arrivalController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Arrival Location',
+                  icon: Icon(Icons.location_on),
+                ),
+                onTap: () async {
+                  final selectedLocation = await Navigator.push<Location>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LocationPicker(),
+                    ),
+                  );
+
+                  if (selectedLocation != null) {
+                    setState(() {
+                      arrival = selectedLocation;
+                      _arrivalController.text = selectedLocation.name;
+                    });
+                  }
+                },
+              ),
+
+              SizedBox(height: 8),
+
+              TextFormField(
+                controller: _dateController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Departure Date',
+                  icon: Icon(Icons.date_range),
+                ),
+                onTap: () => _selectDate(context),
+              ),
+
+              SizedBox(height: 8),
+
+              DropdownButtonFormField<int>(
+                value: requestedSeats,
+                decoration: InputDecoration(
+                  labelText: 'Requested Seats',
+                  icon: Icon(Icons.event_seat),
+                ),
+                items: List.generate(4, (index) => index + 1)
+                    .map((value) => DropdownMenuItem<int>(
+                  value: value,
+                  child: Text(value.toString()),
+                ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    requestedSeats = value!;
+                  });
+                },
+              ),
+
+              SizedBox(height: 16),
+
+              if (_departureController.text.isNotEmpty && _arrivalController.text.isNotEmpty)
+                ElevatedButton(
+                  onPressed: _switchLocations,
+                  child: Text('Switch Locations'),
+                ),
+
+              SizedBox(height: 16),
+
+              ElevatedButton(
+                onPressed: _onSubmit,
+                child: Text('Submit'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
 void main() {
-  runApp(MaterialApp(home: TestRidePrefForm()));
+  runApp(MaterialApp(
+    home: RidePrefForm(),
+  ));
 }
