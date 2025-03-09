@@ -4,6 +4,8 @@ import 'package:untitled/screens/ride_pref/widgets/ride_screen.dart';
 import 'package:untitled/screens/ride_pref/widgets/seat_number_sprinter.dart';
 import '../../../model/ride/locations.dart';
 import '../../../model/ride_pref/ride_pref.dart';
+import '../../../service/mock_location_reposistory.dart';
+
 
 class RidePrefForm extends StatefulWidget {
   final RidePref? initRidePref;
@@ -84,13 +86,12 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-
   Future<void> _selectLocation(BuildContext context, bool isDeparture) async {
     final selectedLocation = await Navigator.push<Location>(
       context,
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) {
-          return LocationPicker();
+          return LocationPicker(repository: MockLocationsRepository());
         },
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(0.0, 1.0); // Starting point (bottom of the screen)
@@ -118,7 +119,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,7 +131,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-
               TextFormField(
                 controller: _departureController,
                 readOnly: true,
@@ -140,7 +139,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.location_on),
                 ),
                 onTap: () => _selectLocation(context, true),
-
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a valid location';
@@ -148,9 +146,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   return null;
                 },
               ),
-
               SizedBox(height: 8),
-
               TextFormField(
                 controller: _arrivalController,
                 readOnly: true,
@@ -159,7 +155,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.location_on),
                 ),
                 onTap: () => _selectLocation(context, false),
-
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a valid location';
@@ -167,9 +162,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   return null;
                 },
               ),
-
               SizedBox(height: 8),
-
               TextFormField(
                 controller: _dateController,
                 readOnly: true,
@@ -178,7 +171,6 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   icon: Icon(Icons.date_range),
                 ),
                 onTap: () => _selectDate(context),
-
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a valid date';
@@ -186,9 +178,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
                   return null;
                 },
               ),
-
               SizedBox(height: 8),
-
               Text('Seats Selected: $requestedSeats', style: TextStyle(fontSize: 18)),
               SizedBox(height: 16),
               ElevatedButton(
@@ -208,17 +198,13 @@ class _RidePrefFormState extends State<RidePrefForm> {
                 },
                 child: Text('Request Seat'),
               ),
-
               SizedBox(height: 16),
-
               if (_departureController.text.isNotEmpty && _arrivalController.text.isNotEmpty)
                 ElevatedButton(
                   onPressed: _switchLocations,
                   child: Text('Switch Locations'),
                 ),
-
               SizedBox(height: 16),
-
               ElevatedButton(
                 onPressed: _onSubmit,
                 child: Text('Submit'),
@@ -233,6 +219,7 @@ class _RidePrefFormState extends State<RidePrefForm> {
 
 void main() {
   runApp(MaterialApp(
-    home: RidePrefForm(),
+    debugShowCheckedModeBanner: false,
+    home: Scaffold(body: RidePrefForm()),
   ));
 }

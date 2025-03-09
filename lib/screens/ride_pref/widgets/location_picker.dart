@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
-import '../../../dummy_data/dummy_data.dart';
 import '../../../model/ride/locations.dart';
+import '../../../service/locations_repository.dart';
 
 class LocationPicker extends StatefulWidget {
-  const LocationPicker({super.key});
+  final LocationsRepository repository;
+
+  const LocationPicker({super.key, required this.repository});
 
   @override
   LocationPickerState createState() => LocationPickerState();
@@ -16,7 +17,7 @@ class LocationPickerState extends State<LocationPicker> {
 
   void _searchLocations(String query) {
     setState(() {
-      _searchResults = fakeLocations
+      _searchResults = widget.repository.getLocations()
           .where((location) => location.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
@@ -65,3 +66,4 @@ class LocationPickerState extends State<LocationPicker> {
     );
   }
 }
+
