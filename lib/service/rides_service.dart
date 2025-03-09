@@ -1,4 +1,5 @@
 
+import 'package:untitled/service/mock_rides_reposistory.dart';
 import 'package:untitled/service/rides_reposistory.dart';
 
 import '../dummy_data/dummy_data.dart';
@@ -41,10 +42,10 @@ class RidesService {
 
   RidesService._internal();
 
-  factory RidesService() {
+  factory RidesService({required RidesRepository repository}) {
+    _instance._repository = repository; // Initialize the repository
     return _instance;
   }
-
 
   void initialize(RidesRepository repository) {
     _repository = repository;
@@ -54,17 +55,15 @@ class RidesService {
     return _repository.getRides(preference, filter);
   }
 
-  List<Ride> getRideByDate(DateTime date){
-    return availableRides.where((ride) =>
-    ride.departureDate.day == date.day
-        && ride.departureDate.month == date.month
-        && ride.departureDate.year == date.year).toList();
+  List<Ride> getRideByDate(DateTime date) {
+    return _repository.getRideByDate(date); // Use repository method
   }
 
   List<Ride> get availableRides {
     return _repository.getAvailableRides();
   }
 }
+
 
 class RidesFilter {
   final bool petAccepted;
@@ -73,7 +72,7 @@ class RidesFilter {
 }
 
 void main() {
-  RidesService service = RidesService();
+  RidesService service = RidesService(repository: MockRidesRepository());
   DateTime today = DateTime.now();
 
   List<Ride> ridesToday = service.getRideByDate(today);
