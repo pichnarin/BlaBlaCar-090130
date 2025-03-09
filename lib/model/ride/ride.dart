@@ -30,6 +30,8 @@ class Ride {
 
   final List<User> passengers = [];
 
+  final bool acceptPets;
+
   Ride({
     required this.departureLocation,
     required this.departureDate,
@@ -38,6 +40,7 @@ class Ride {
     required this.driver,
     required this.availableSeats,
     required this.pricePerSeat,
+    required this.acceptPets,
   });
 
   void addPassenger(User passenger) {

@@ -27,6 +27,7 @@ class RidesScreen extends StatelessWidget {
         ),
         availableSeats: 3,
         pricePerSeat: 20.0,
+        acceptPets: false,
       ),
     ];
 
