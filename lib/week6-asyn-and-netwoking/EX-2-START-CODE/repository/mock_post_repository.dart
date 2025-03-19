@@ -2,18 +2,14 @@ import '../model/post.dart';
 
 import 'post_repository.dart';
 
-class MockPostRepository extends PostRepository {
+class PostMockRepo extends PostRepository {
+  final List<Post> _posts = [
+    Post(id: 1, title: 'Who is the best teacher?', body: 'Teacher ronan', description: 'description'),
+    Post(id: 2, title: 'Mock Post 2', body: 'This is another mock post body', description: 'description'),
+  ];
+
   @override
-  Future<Post> getPost(int postId) {
-    return Future.delayed(Duration(seconds: 5), () {
-      if (postId != 25) {
-        throw Exception("No post found");
-      }
-      return Post(
-        id: 25,
-        title: 'Who is the best',
-        description: 'teacher ronan',
-      );
-    });
+  Future<List<Post>> fetchPosts() async {
+    return Future.delayed(Duration(seconds: 1), () => _posts);
   }
 }

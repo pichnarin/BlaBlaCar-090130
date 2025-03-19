@@ -8,7 +8,8 @@ import 'ui/screens/post_screen.dart';
 
 void main() {
   // 1- Create the repository
-  PostRepository postRepo = MockPostRepository();
+  // PostRepository postRepo = PostMockRepo();
+  PostRepository postRepo = PostRepoImpl();
 
   // 2 - Run the UI
   runApp(
